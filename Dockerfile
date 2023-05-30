@@ -2,11 +2,11 @@
 FROM php:8-apache
 
 ## Install Required Packages ##
-RUN apt-get update && apt-get install -y --no-install-recommends wget nano vim git tar gnupg lsb-release
+RUN apt-get update && apt-get install -y --no-install-recommends wget nano vim git tar gnupg lsb-release automake libtool autoconf
 
 ## Install gpg keys ##
-RUN wget -qO - https://modsecurity.digitalwave.hu/archive.key | apt-key add -
-RUN wget -qO - https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
+apt-key --keyring /etc/apt/trusted.gpg.d/nodesource.gpg adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 9FD3B784BC1C6FC31A8A0A1C1655A0AB68576280
+apt-key --keyring /etc/apt/trusted.gpg.d/modsecurity.gpg adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys F62B3DCBCA17A4F40F4A83FADBCB9AAD1F96F29F
 
 ## Setup Repos and apt pinning ##
 RUN echo "deb http://modsecurity.digitalwave.hu/debian/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/dwmodsec.list
@@ -19,7 +19,7 @@ ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/do
 RUN chmod +x /usr/local/bin/install-php-extensions
 
 ## Install Packages and Extensions ##
-RUN apt-get update && apt-get install -y --no-install-recommends nodejs libapache2-mod-geoip libapache2-mod-security2
+RUN apt-get update && apt-get install -y --no-install-recommends nodejs libapache2-mod-security2
 RUN install-php-extensions bcmath exif gd gettext imagick intl mysqli opcache pdo_mysql redis zip
 
 ## Symlink and update for Node ##
@@ -39,8 +39,12 @@ RUN git clone https://github.com/coreruleset/coreruleset /etc/apache2/modsecurit
 RUN cp /etc/apache2/modsecurity.d/coreruleset/crs-setup.conf.example /etc/apache2/modsecurity.d/coreruleset/crs-setup.conf
 COPY configs/modsec_rules.conf /etc/apache2/conf-enabled
 
+## MaxMind DB ##
+#RUN git clone https://github.com/maxmind/mod_maxminddb /root/mod_maxminddb
+#RUN cd /root/mod_maxminddb && ./bootstrap && ./configure && make install
+
 ## Enable Modules ##
-RUN a2enmod rewrite security2 geoip headers
+RUN a2enmod rewrite security2 headers
 
 ## COPY Composer ##
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
