@@ -2,7 +2,7 @@
 FROM php:8-apache
 
 ## Install Required Packages ##
-RUN apt-get update && apt-get install -y --no-install-recommends wget nano vim git tar gnupg lsb-release automake libtool autoconf
+RUN apt-get update && apt-get install -y --no-install-recommends wget nano vim git tar gnupg lsb-release automake libtool autoconf unzip
 
 ## Install gpg keys ##
 RUN mkdir /etc/apt/keyrings
