@@ -29,6 +29,7 @@ RUN npm install npm@latest -g
 ## Setup Modsecurity ##
 # https://www.linuxcapable.com/how-to-install-modsecurity-with-apache-on-ubuntu-linux
 # https://modsecurity.digitalwave.hu
+# https://coreruleset.org/docs/deployment/install
 RUN cp /etc/modsecurity/modsecurity.conf-recommended /etc/modsecurity/modsecurity.conf
 RUN sed -i 's/SecRuleEngine DetectionOnly/SecRuleEngine On/' /etc/modsecurity/modsecurity.conf
 RUN sed -i 's/SecAuditLogParts ABDEFHIJZ/SecAuditLogParts ABCEFHJKZ/' /etc/modsecurity/modsecurity.conf
