@@ -27,10 +27,16 @@ RUN ln -s /usr/bin/node /usr/local/bin/node
 RUN npm install npm@latest -g
 
 ## Setup Modsecurity ##
-# https://www.linuxcapable.com/how-to-install-modsecurity-with-apache-on-ubuntu-linux/
+# https://www.linuxcapable.com/how-to-install-modsecurity-with-apache-on-ubuntu-linux
+# https://modsecurity.digitalwave.hu
 RUN cp /etc/modsecurity/modsecurity.conf-recommended /etc/modsecurity/modsecurity.conf
 RUN sed -i 's/SecRuleEngine DetectionOnly/SecRuleEngine On/' /etc/modsecurity/modsecurity.conf
 RUN sed -i 's/SecAuditLogParts ABDEFHIJZ/SecAuditLogParts ABCEFHJKZ/' /etc/modsecurity/modsecurity.conf
+
+## Install OWASP Core Rule Set ##
+RUN git clone https://github.com/coreruleset/coreruleset /etc/apache2/modsecurity.d/coreruleset
+RUN cp /etc/apache2/modsecurity.d/coreruleset/crs-setup.conf.example /etc/apache2/modsecurity.d/coreruleset/crs-setup.conf
+COPY configs/modsec_rules.conf /etc/apache2/conf-enabled
 
 ## Enable Modules ##
 RUN a2enmod rewrite security2 geoip headers
