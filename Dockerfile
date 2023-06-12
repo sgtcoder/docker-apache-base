@@ -7,12 +7,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends wget nano vim g
 ## Install gpg keys ##
 RUN mkdir /etc/apt/keyrings
 RUN wget -qO - https://modsecurity.digitalwave.hu/archive.key | gpg --dearmor | tee /etc/apt/keyrings/modsecurity.gpg
-RUN wget -qO - https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor | tee /etc/apt/keyrings/nodesource
+RUN wget -qO - https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor | tee /etc/apt/keyrings/nodesource.gpg
 
 ## Setup Repos and apt pinning ##
 RUN echo "deb [signed-by=/etc/apt/keyrings/modsecurity.gpg] http://modsecurity.digitalwave.hu/debian/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/dwmodsec.list
 RUN echo "deb [signed-by=/etc/apt/keyrings/modsecurity.gpg] http://modsecurity.digitalwave.hu/debian/ $(lsb_release -sc)-backports main" >> /etc/apt/sources.list.d/dwmodsec.list
-RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource] https://deb.nodesource.com/node_18.x bullseye main" > /etc/apt/sources.list.d/nodesource.list
+RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x bullseye main" > /etc/apt/sources.list.d/nodesource.list
 COPY ./configs/99modsecurity /etc/apt/preferences.d/99modsecurity
 
 ## Install PHP Extension Installer ##
