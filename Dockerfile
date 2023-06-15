@@ -5,7 +5,7 @@ FROM php:8-apache
 RUN apt-get update && apt-get install -y --no-install-recommends wget nano vim git tar gnupg lsb-release automake libtool autoconf unzip aptly
 
 ## Install gpg keys ##
-RUN mkdir /etc/apt/keyrings
+RUN mkdir -p /etc/apt/keyrings
 RUN wget -qO - https://modsecurity.digitalwave.hu/archive.key | gpg --dearmor | tee /etc/apt/keyrings/modsecurity.gpg
 RUN wget -qO - https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor | tee /etc/apt/keyrings/nodesource.gpg
 
