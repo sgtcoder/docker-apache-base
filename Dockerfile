@@ -4,6 +4,9 @@ FROM php:8-apache
 ## Install Required Packages ##
 RUN apt-get update && apt-get install -y --no-install-recommends wget nano vim git tar gnupg lsb-release automake libtool autoconf unzip aptly
 
+## Create Folders ##
+RUN mkdir /root/.gnupg && chmod 700 /root/.gnupg
+
 ## Install gpg keys ##
 RUN mkdir -p /etc/apt/keyrings
 RUN gpg --no-default-keyring --keyring /etc/apt/keyrings/xanmod.gpg --recv-keys --keyserver hkp://keyserver.ubuntu.com 86F7D09EE734E623
