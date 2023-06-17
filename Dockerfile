@@ -6,13 +6,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends wget nano vim g
 
 ## Install gpg keys ##
 RUN mkdir -p /etc/apt/keyrings
-RUN wget -qO - https://modsecurity.digitalwave.hu/archive.key | gpg --dearmor | tee /etc/apt/keyrings/modsecurity.gpg
-RUN wget -qO - https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor | tee /etc/apt/keyrings/nodesource.gpg
+RUN gpg --no-default-keyring --keyring /etc/apt/keyrings/xanmod.gpg --recv-keys --keyserver hkp://keyserver.ubuntu.com 86F7D09EE734E623
+RUN gpg --no-default-keyring --keyring /etc/apt/keyrings/nodesource.gpg --recv-keys --keyserver hkp://keyserver.ubuntu.com 1655A0AB68576280
+RUN gpg --no-default-keyring --keyring /etc/apt/keyrings/modsecurity.gpg --recv-keys --keyserver hkp://keyserver.ubuntu.com DBCB9AAD1F96F29F FD32C1E50D28C063
 
 ## Setup Repos and apt pinning ##
-RUN echo "deb [signed-by=/etc/apt/keyrings/modsecurity.gpg] http://modsecurity.digitalwave.hu/debian/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/dwmodsec.list
-RUN echo "deb [signed-by=/etc/apt/keyrings/modsecurity.gpg] http://modsecurity.digitalwave.hu/debian/ $(lsb_release -sc)-backports main" >> /etc/apt/sources.list.d/dwmodsec.list
-RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x bullseye main" > /etc/apt/sources.list.d/nodesource.list
+RUN "deb [arch=amd64 signed-by=/etc/apt/keyrings/xanmod.gpg] https://deb.xanmod.org releases main" | sudo tee /etc/apt/sources.list.d/xanmod.list
+RUN "deb [arch=amd64 signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x $(lsb_release -sc) main" > /etc/apt/sources.list.d/nodesource.list
+RUN "deb [signed-by=/etc/apt/keyrings/modsecurity.gpg] http://modsecurity.digitalwave.hu/debian/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/dwmodsec.list
+RUN "deb [signed-by=/etc/apt/keyrings/modsecurity.gpg] http://modsecurity.digitalwave.hu/debian/ $(lsb_release -sc)-backports main" >> /etc/apt/sources.list.d/dwmodsec.list
 COPY ./configs/99modsecurity /etc/apt/preferences.d/99modsecurity
 
 ## Install PHP Extension Installer ##
