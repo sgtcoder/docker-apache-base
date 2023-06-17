@@ -9,7 +9,7 @@ RUN mkdir /root/.gnupg && chmod 700 /root/.gnupg
 
 ## Install gpg keys ##
 RUN mkdir -p /etc/apt/keyrings
-RUN gpg --no-default-keyring --keyring /etc/apt/keyrings/nodesource.gpg --recv-keys 1655A0AB68576280
+RUN gpg --no-default-keyring --keyring /etc/apt/keyrings/nodesource.gpg --recv-keys --keyserver hkp://keyserver.ubuntu.com 1655A0AB68576280
 RUN gpg --no-default-keyring --keyring /etc/apt/keyrings/modsecurity.gpg --recv-keys DBCB9AAD1F96F29F FD32C1E50D28C063
 
 ## Setup Repos and apt pinning ##
