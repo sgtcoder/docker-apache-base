@@ -4,13 +4,12 @@ FROM php:8-apache
 ## Install Required Packages ##
 RUN apt-get update && apt-get install -y --no-install-recommends wget nano vim git tar gnupg lsb-release automake libtool autoconf unzip aptly
 
-## Create Folders ##
-RUN mkdir /root/.gnupg && chmod 700 /root/.gnupg
-
 ## Install gpg keys ##
-RUN mkdir -p /etc/apt/keyrings
+RUN mkdir -p /root/.gnupg && chmod 700 /root/.gnupg
+RUN mkdir -p /etc/apt/keyrings && install -m 0755 -d /etc/apt/keyrings
 RUN gpg --no-default-keyring --keyring /etc/apt/keyrings/nodesource.gpg --recv-keys --keyserver hkp://keyserver.ubuntu.com 1655A0AB68576280
-RUN gpg --no-default-keyring --keyring /etc/apt/keyrings/modsecurity.gpg --recv-keys DBCB9AAD1F96F29F FD32C1E50D28C063
+RUN wget -qO - https://modsecurity.digitalwave.hu/archive.key | gpg --dearmor > /etc/apt/keyrings/modsecurity.gpg
+RUN chown _apt /etc/apt/keyrings/*.gpg
 
 ## Setup Repos and apt pinning ##
 RUN echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x $(lsb_release -sc) main" > /etc/apt/sources.list.d/nodesource.list
