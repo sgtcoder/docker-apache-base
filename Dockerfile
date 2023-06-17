@@ -13,7 +13,7 @@ RUN gpg --no-default-keyring --keyring /etc/apt/keyrings/nodesource.gpg --recv-k
 RUN gpg --no-default-keyring --keyring /etc/apt/keyrings/modsecurity.gpg --recv-keys DBCB9AAD1F96F29F FD32C1E50D28C063
 
 ## Setup Repos and apt pinning ##
-RUN "deb [arch=amd64 signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x $(lsb_release -sc) main" > /etc/apt/sources.list.d/nodesource.list
+RUN "deb [arch=amd64 signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x buster main" > /etc/apt/sources.list.d/nodesource.list
 RUN "deb [signed-by=/etc/apt/keyrings/modsecurity.gpg] http://modsecurity.digitalwave.hu/debian/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/dwmodsec.list
 RUN "deb [signed-by=/etc/apt/keyrings/modsecurity.gpg] http://modsecurity.digitalwave.hu/debian/ $(lsb_release -sc)-backports main" >> /etc/apt/sources.list.d/dwmodsec.list
 COPY ./configs/99modsecurity /etc/apt/preferences.d/99modsecurity
