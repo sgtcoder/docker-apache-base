@@ -12,7 +12,7 @@ RUN wget -O - https://modsecurity.digitalwave.hu/archive.key | gpg --no-default-
 RUN chown _apt /etc/apt/keyrings/*.gpg
 
 ## Setup Repos and apt pinning ##
-RUN echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x $(lsb_release -sc) main" > /etc/apt/sources.list.d/nodesource.list
+RUN echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x $(lsb_release -sc) main" > /etc/apt/sources.list.d/nodesource.list
 RUN echo "deb [signed-by=/etc/apt/keyrings/modsecurity.gpg] http://modsecurity.digitalwave.hu/debian/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/dwmodsec.list
 RUN echo "deb [signed-by=/etc/apt/keyrings/modsecurity.gpg] http://modsecurity.digitalwave.hu/debian/ $(lsb_release -sc)-backports main" >> /etc/apt/sources.list.d/dwmodsec.list
 COPY ./configs/99modsecurity /etc/apt/preferences.d/99modsecurity
