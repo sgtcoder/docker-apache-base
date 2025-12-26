@@ -2,27 +2,36 @@
 FROM php:8-apache
 
 ## Install Required Packages ##
-RUN apt-get update && apt-get install -y --no-install-recommends wget nano vim git tar gnupg lsb-release automake libtool autoconf unzip aptly jq
+RUN apt-get update && apt-get install -y --no-install-recommends wget nano vim git tar gnupg lsb-release automake libtool autoconf unzip jq
 
-## Install gpg keys ##
+## Copy Configs and Scripts ##
+COPY ./configs/99modsecurity /etc/apt/preferences.d/99modsecurity
+COPY ./scripts/config_gpg.sh /usr/local/bin/config_gpg
+COPY ./scripts/cli_log.sh /usr/local/bin/cli_log
+
+## Make Scripts Executable ##
+RUN chmod +x /usr/local/bin/config_gpg /usr/local/bin/cli_log
+
+## Configure gpg keys ##
 RUN mkdir -p /root/.gnupg && chmod 700 /root/.gnupg
 RUN mkdir -p /etc/apt/keyrings && install -m 0755 -d /etc/apt/keyrings
-RUN gpg --no-default-keyring --keyring /etc/apt/keyrings/nodesource.gpg --recv-keys --keyserver keys.gnupg.net 1655A0AB68576280
-RUN wget -O - https://modsecurity.digitalwave.hu/archive.key | gpg --no-default-keyring --keyring /etc/apt/keyrings/modsecurity.gpg --import
-RUN chown _apt /etc/apt/keyrings/*.gpg
+
+## Install gpg keys ##
+RUN config_gpg https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key nodesource
+RUN config_gpg https://modsecurity.digitalwave.hu/archive.key modsecurity
+RUN config_gpg https://www.aptly.info/pubkey.txt aptly
 
 ## Setup Repos and apt pinning ##
-RUN echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x $(lsb_release -sc) main" > /etc/apt/sources.list.d/nodesource.list
-RUN echo "deb [signed-by=/etc/apt/keyrings/modsecurity.gpg] http://modsecurity.digitalwave.hu/debian/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/dwmodsec.list
-RUN echo "deb [signed-by=/etc/apt/keyrings/modsecurity.gpg] http://modsecurity.digitalwave.hu/debian/ $(lsb_release -sc)-backports main" >> /etc/apt/sources.list.d/dwmodsec.list
-COPY ./configs/99modsecurity /etc/apt/preferences.d/99modsecurity
+RUN echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_24.x nodistro main" | tee /etc/apt/sources.list.d/node.list
+RUN echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/modsecurity.gpg] http://modsecurity.digitalwave.hu/debian/ $(lsb_release -sc)-backports main" | tee /etc/apt/sources.list.d/dwmodsec.list
+RUN echo "deb [signed-by=/etc/apt/keyrings/aptly.gpg] http://repo.aptly.info/ci $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/aptly.list
 
 ## Install PHP Extension Installer ##
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 RUN chmod +x /usr/local/bin/install-php-extensions
 
 ## Install Packages and Extensions ##
-RUN apt-get update && apt-get install -y --no-install-recommends nodejs libapache2-mod-security2
+RUN apt-get update && apt-get install -y --no-install-recommends aptly nodejs libapache2-mod-security2
 RUN install-php-extensions bcmath exif gd gettext imagick intl mysqli opcache pdo_mysql redis zip
 
 ## Symlink and update for Node ##
